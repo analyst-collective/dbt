@@ -636,11 +636,22 @@ def _check_resource_uniqueness(
         relation = relation_cls.create_from(config=config, node=node)
         full_node_name = str(relation)
 
-        existing_node = names_resources.get(name)
-        if existing_node is not None:
-            dbt.exceptions.raise_duplicate_resource_name(
-                existing_node, node
-            )
+        # Check refs - is there an unqualified ref to a
+        # model that exists in two different packages?
+        for ref in node.refs:
+            if len(ref) == 1:
+                matched = manifest.find_nodes_by_name(ref[0])
+            else:
+                # two-arg refs are namespaced, so no need
+                # to check for duplicates. Nodes must still
+                # have unique names within a package
+                continue
+
+            if len(matched) > 1:
+                dbt.exceptions.raise_ambiguous_ref(
+                    matched[0],
+                    matched[1]
+                )
 
         existing_alias = alias_resources.get(full_node_name)
         if existing_alias is not None:
