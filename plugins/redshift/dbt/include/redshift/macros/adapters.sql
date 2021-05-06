@@ -39,6 +39,7 @@
           'sort',
           validator=validation.any[list, basestring]) -%}
   {%- set sql_header = config.get('sql_header', none) -%}
+  {%- set backup = config.get('backup') -%}
 
   {{ sql_header if sql_header is not none }}
 
@@ -46,6 +47,7 @@
     {{ relation.include(database=(not temporary), schema=(not temporary)) }}
     {{ dist(_dist) }}
     {{ sort(_sort_type, _sort) }}
+    {% if backup == false -%}backup no{%- endif %}
   as (
     {{ sql }}
   );

@@ -14,6 +14,7 @@ class RedshiftConfig(AdapterConfig):
     dist: Optional[str] = None
     sort: Optional[str] = None
     bind: Optional[bool] = None
+    backup: Optional[bool] = True
 
 
 class RedshiftAdapter(PostgresAdapter):
