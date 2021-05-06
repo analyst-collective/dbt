@@ -128,9 +128,10 @@ def _all_source_paths(
     snapshot_paths: List[str],
     analysis_paths: List[str],
     macro_paths: List[str],
+    test_paths: List[str],
 ) -> List[str]:
     return list(chain(source_paths, data_paths, snapshot_paths, analysis_paths,
-                      macro_paths))
+                      macro_paths, test_paths))
 
 
 T = TypeVar('T')
@@ -333,7 +334,7 @@ class PartialProject(RenderComponents):
 
         all_source_paths: List[str] = _all_source_paths(
             source_paths, data_paths, snapshot_paths, analysis_paths,
-            macro_paths
+            macro_paths, test_paths
         )
 
         docs_paths: List[str] = value_or(cfg.docs_paths, all_source_paths)
@@ -530,7 +531,7 @@ class Project:
     def all_source_paths(self) -> List[str]:
         return _all_source_paths(
             self.source_paths, self.data_paths, self.snapshot_paths,
-            self.analysis_paths, self.macro_paths
+            self.analysis_paths, self.macro_paths, self.test_paths
         )
 
     def __str__(self):

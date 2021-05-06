@@ -32,7 +32,7 @@ from dbt.contracts.graph.manifest import (
     Manifest, Disabled, MacroManifest, ManifestStateCheck
 )
 from dbt.contracts.graph.parsed import (
-    ParsedSourceDefinition, ParsedNode, ParsedMacro, ColumnInfo, ParsedExposure
+    ParsedSchemaTestNode, ParsedSourceDefinition, ParsedMacro, ColumnInfo, ParsedExposure
 )
 from dbt.contracts.util import Writable
 from dbt.exceptions import (
@@ -693,12 +693,6 @@ def _get_node_column(node, column_name):
     return column
 
 
-DocsContextCallback = Callable[
-    [Union[ParsedNode, ParsedSourceDefinition]],
-    Dict[str, Any]
-]
-
-
 # node and column descriptions
 def _process_docs_for_node(
     context: Dict[str, Any],
@@ -749,12 +743,42 @@ def _process_docs_for_exposure(
 # exposures: exposure descriptions
 def process_docs(manifest: Manifest, config: RuntimeConfig):
     for node in manifest.nodes.values():
-        ctx = generate_runtime_docs(
-            config,
-            node,
-            manifest,
-            config.project_name,
-        )
+        if isinstance(node, ParsedSchemaTestNode):
+            # Idealing we should be able to put the test kwargs in the context,
+            # but kwargs have already been processed at this point
+            # ex: 'model' --> "{{ ref('model') }}"
+            ctx = generate_runtime_docs(
+                config,
+                node,
+                manifest,
+                config.project_name,
+            )
+
+            model = []
+
+            if len(node.refs):
+                model = node.refs[0]
+            elif len(node.sources):
+                model = node.sources[0]
+
+            if len(model) == 1:
+                target_model_name = model[0]
+            elif len(model) == 2:
+                _, target_model_name = model
+            else:
+                raise dbt.exceptions.InternalException(
+                    f'Refs and sources should always be 1 or 2 arguments - got {len(model)}'
+                )
+
+            ctx['column_name'] = node.column_name
+            ctx['model'] = target_model_name
+        else:
+            ctx = generate_runtime_docs(
+                config,
+                node,
+                manifest,
+                config.project_name,
+            )
         _process_docs_for_node(ctx, node)
     for source in manifest.sources.values():
         ctx = generate_runtime_docs(
@@ -856,7 +880,6 @@ def _process_refs_for_node(
                 node, target_model_name, target_model_package,
                 disabled=(isinstance(target_model, Disabled))
             )
-
             continue
 
         target_model_id = target_model.unique_id

@@ -46,7 +46,8 @@ class NodeType(StrEnum):
             cls.Source,
             cls.Macro,
             cls.Analysis,
-            cls.Exposure
+            cls.Exposure,
+            cls.Test
         ]
 
     def pluralize(self) -> str:

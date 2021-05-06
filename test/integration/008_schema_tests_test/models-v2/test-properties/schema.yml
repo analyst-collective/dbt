@@ -1,0 +1,31 @@
+version: 2
+
+models:
+    - name: table_copy
+      description: "A copy of the table"
+      columns:
+        - name: id
+          description: "The ID"
+          tests:
+            - not_null
+            - unique
+        - name: first_name
+          description: "The user's first name"
+        - name: ip_address
+          description: "The user's IP address"
+          tests:
+            - unique
+        - name: updated_at
+          description: "The update time of the user"
+        - name: email
+          description: "The user's email address"
+        - name: favorite_color
+          description: "The user's favorite color"
+        - name: fav_number
+          description: "The user's favorite number"
+
+tests:
+    - name: not_null
+      description: "test not null description for column {{ column_name }} on model {{ model }}"
+    - name: unique
+      description: "test unique description for column {{ column_name }} on model {{ model }}"

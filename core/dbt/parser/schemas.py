@@ -234,14 +234,14 @@ class SchemaParser(SimpleParser[SchemaTestBlock, ParsedSchemaTestNode]):
             )
         return None
 
-    def parse_column_tests(
+    def parse_column_test_instances(
         self, block: TestBlock, column: UnparsedColumn
     ) -> None:
         if not column.tests:
             return
 
         for test in column.tests:
-            self.parse_test(block, test, column)
+            self.parse_test_instance(block, test, column)
 
     def _generate_source_config(self, fqn: List[str], rendered: bool):
         generator: BaseContextConfigGenerator
@@ -393,7 +393,6 @@ class SchemaParser(SimpleParser[SchemaTestBlock, ParsedSchemaTestNode]):
         tags: List[str],
         column_name: Optional[str],
     ) -> ParsedSchemaTestNode:
-
         render_ctx = generate_target_context(
             self.root_project, self.root_project.cli_vars
         )
@@ -564,7 +563,7 @@ class SchemaParser(SimpleParser[SchemaTestBlock, ParsedSchemaTestNode]):
             node.raw_sql, context, node, capture_macros=True
         )
 
-    def parse_test(
+    def parse_test_instance(
         self,
         target_block: TestBlock,
         test: TestDef,
@@ -594,12 +593,12 @@ class SchemaParser(SimpleParser[SchemaTestBlock, ParsedSchemaTestNode]):
         )
         self.parse_node(block)
 
-    def parse_tests(self, block: TestBlock) -> None:
+    def parse_test_instances(self, block: TestBlock) -> None:
         for column in block.columns:
-            self.parse_column_tests(block, column)
+            self.parse_column_test_instances(block, column)
 
         for test in block.tests:
-            self.parse_test(block, test, None)
+            self.parse_test_instance(block, test, None)
 
     def parse_exposures(self, block: YamlBlock) -> None:
         parser = ExposureParser(self, block)
@@ -638,19 +637,19 @@ class SchemaParser(SimpleParser[SchemaTestBlock, ParsedSchemaTestNode]):
             if 'models' in dct:
                 parser = TestablePatchParser(self, yaml_block, 'models')
                 for test_block in parser.parse():
-                    self.parse_tests(test_block)
+                    self.parse_test_instances(test_block)
 
             # NonSourceParser.parse()
             if 'seeds' in dct:
                 parser = TestablePatchParser(self, yaml_block, 'seeds')
                 for test_block in parser.parse():
-                    self.parse_tests(test_block)
+                    self.parse_test_instances(test_block)
 
             # NonSourceParser.parse()
             if 'snapshots' in dct:
                 parser = TestablePatchParser(self, yaml_block, 'snapshots')
                 for test_block in parser.parse():
-                    self.parse_tests(test_block)
+                    self.parse_test_instances(test_block)
 
             # This parser uses SourceParser.parse() which doesn't return
             # any test blocks. Source tests are handled at a later point
@@ -663,13 +662,17 @@ class SchemaParser(SimpleParser[SchemaTestBlock, ParsedSchemaTestNode]):
             if 'macros' in dct:
                 parser = MacroPatchParser(self, yaml_block, 'macros')
                 for test_block in parser.parse():
-                    self.parse_tests(test_block)
+                    self.parse_test_instances(test_block)
+
+            if 'tests' in dct:
+                parser = TestablePatchParser(self, yaml_block, 'tests')
+                parser.parse()
 
             # NonSourceParser.parse()
             if 'analyses' in dct:
                 parser = AnalysisPatchParser(self, yaml_block, 'analyses')
                 for test_block in parser.parse():
-                    self.parse_tests(test_block)
+                    self.parse_test_instances(test_block)
 
             # parse exposures
             if 'exposures' in dct:

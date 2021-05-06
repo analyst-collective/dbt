@@ -1,5 +1,8 @@
 ## dbt 0.20.0 (Release TBD)
 
+### Features
+- Support descriptions defined as a yaml property for tests. ([#3249](https://github.com/fishtown-analytics/dbt/issues/3249), [#3302](https://github.com/fishtown-analytics/dbt/pull/3302))
+
 ### Fixes
 - Fix compiled sql for ephemeral models ([#3317](https://github.com/fishtown-analytics/dbt/issues/3317), [#3318](https://github.com/fishtown-analytics/dbt/pull/3318))
 - Now generating `run_results.json` even when no nodes are selected ([#3313](https://github.com/fishtown-analytics/dbt/issues/3313), [#3315](https://github.com/fishtown-analytics/dbt/pull/3315))

@@ -366,8 +366,6 @@ class TestSchemaTestContext(DBTIntegrationTest):
 
         results = self.run_dbt(['test'], expect_pass=False)
         self.assertEqual(len(results), 2)
-        result0 = results[0]
-        result1 = results[1]
         for result in results:
             if result.node.name == 'type_two_model_a_':
                 # This will be WARN if the test macro was rendered correctly
@@ -377,3 +375,36 @@ class TestSchemaTestContext(DBTIntegrationTest):
                 # was rendered correctly
                 self.assertRegex(result.node.compiled_sql, r'union all')
 
+
+class TestSchemaTestProperties(DBTIntegrationTest):
+    def setUp(self):
+        DBTIntegrationTest.setUp(self)
+        self.run_sql_file("seed.sql")
+
+    @property
+    def schema(self):
+        return "schema_tests_008"
+
+    @property
+    def models(self):
+        return "models-v2/test-properties"
+
+    @use_profile('postgres')
+    def test_postgres_test_description(self):
+        results = self.run_dbt()
+        self.assertEqual(len(results), 1)
+        results = self.run_dbt(['test'])
+        self.assertEqual(len(results), 3)
+
+        test_descriptions = [
+            'test not null description for column id on model table_copy',
+            'test unique description for column id on model table_copy',
+            'test unique description for column ip_address on model table_copy'
+        ]
+
+        test_result_descriptions = []
+
+        for result in results:
+            test_result_descriptions.append(result.node.description)
+
+        self.assertListEqual(sorted(test_result_descriptions), sorted(test_descriptions))

@@ -621,7 +621,7 @@ class TestProject(BaseConfigTest):
         self.assertEqual(project.data_paths, ['data'])
         self.assertEqual(project.test_paths, ['test'])
         self.assertEqual(project.analysis_paths, [])
-        self.assertEqual(project.docs_paths, ['models', 'data', 'snapshots', 'macros'])
+        self.assertEqual(project.docs_paths, ['models', 'data', 'snapshots', 'macros', 'test'])
         self.assertEqual(project.asset_paths, [])
         self.assertEqual(project.target_path, 'target')
         self.assertEqual(project.clean_targets, ['target'])
@@ -654,7 +654,7 @@ class TestProject(BaseConfigTest):
             'target-path': 'other-target',
         })
         project = project_from_config_norender(self.default_project_data)
-        self.assertEqual(project.docs_paths, ['other-models', 'data', 'snapshots', 'macros'])
+        self.assertEqual(project.docs_paths, ['other-models', 'data', 'snapshots', 'macros', 'test'])
         self.assertEqual(project.clean_targets, ['other-target'])
 
     def test_hashed_name(self):
@@ -1223,7 +1223,7 @@ class TestRuntimeConfigFiles(BaseFileTest):
         self.assertEqual(config.data_paths, ['data'])
         self.assertEqual(config.test_paths, ['test'])
         self.assertEqual(config.analysis_paths, [])
-        self.assertEqual(config.docs_paths, ['models', 'data', 'snapshots', 'macros'])
+        self.assertEqual(config.docs_paths, ['models', 'data', 'snapshots', 'macros', 'test'])
         self.assertEqual(config.asset_paths, [])
         self.assertEqual(config.target_path, 'target')
         self.assertEqual(config.clean_targets, ['target'])

@@ -368,6 +368,10 @@ class ParsedSchemaTestNode(ParsedNode, HasTestMetadata):
     column_name: Optional[str] = None
     config: TestConfig = field(default_factory=TestConfig)
 
+    @property
+    def patch_lookup_key(self) -> str:
+        return self.test_metadata.name
+
     def same_config(self, other) -> bool:
         return (
             self.unrendered_config.get('severity') ==

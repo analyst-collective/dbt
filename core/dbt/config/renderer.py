@@ -220,6 +220,9 @@ class SchemaYamlRenderer(BaseRenderer):
                     return False
             elif self._is_norender_key(keypath[1:]):
                 return False
+        elif keypath[0] == NodeType.Test.pluralize():
+            if keypath[2] == 'description':
+                return False
         else:  # keypath[0] in self.DOCUMENTABLE_NODES:
             if self._is_norender_key(keypath[1:]):
                 return False

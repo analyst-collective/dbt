@@ -54,7 +54,11 @@ class UnparsedNode(UnparsedBaseNode, HasSQL):
     ]})
 
     @property
-    def search_name(self):
+    def patch_lookup_key(self) -> str:
+        return self.name
+
+    @property
+    def search_name(self) -> str:
         return self.name
 
 
