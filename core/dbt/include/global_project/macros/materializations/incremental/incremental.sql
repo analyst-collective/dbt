@@ -6,15 +6,19 @@
   {% set target_relation = this.incorporate(type='table') %}
   {% set existing_relation = load_relation(this) %}
 
+  {% set on_schema_change = incremental_validate_on_schema_change(config.get('on_schema_change')) %}
+
   {{ run_hooks(pre_hooks, inside_transaction=False) }}
 
   -- `BEGIN` happens here:
   {{ run_hooks(pre_hooks, inside_transaction=True) }}
 
   {% set to_drop = [] %}
+
   {% if existing_relation is none %}
       {% set build_sql = create_table_as(False, target_relation, sql) %}
-  {% elif existing_relation.is_view or should_full_refresh() %}
+  
+  {% elif should_full_refresh() or existing_relation.is_view %}
       {#-- Make sure the backup doesn't exist so we don't encounter issues with the rename below #}
       {% set tmp_identifier = model['name'] + '__dbt_tmp' %}
       {% set backup_identifier = model['name'] + "__dbt_backup" %}
@@ -28,13 +32,23 @@
       {% set build_sql = create_table_as(False, intermediate_relation, sql) %}
       {% set need_swap = true %}
       {% do to_drop.append(backup_relation) %}
+  
   {% else %}
-      {% set tmp_relation = make_temp_relation(target_relation) %}
       {% do run_query(create_table_as(True, tmp_relation, sql)) %}
+      {% set schema_changed = check_for_schema_changes(tmp_relation, target_relation) %}
+  
+      {% if schema_changed and on_schema_change == 'full_refresh' %}
+        {# placeholder for full refresh from permanent table #}
+      {% endif %}
+
+      {% do process_schema_changes(schema_changed, on_schema_change, tmp_relation, target_relation) %}
+      
       {% do adapter.expand_target_column_types(
              from_relation=tmp_relation,
              to_relation=target_relation) %}
+
       {% set build_sql = incremental_upsert(tmp_relation, target_relation, unique_key=unique_key) %}
+  
   {% endif %}
 
   {% call statement("main") %}
