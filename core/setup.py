@@ -61,7 +61,7 @@ setup(
     install_requires=[
         'Jinja2==2.11.2',
         'PyYAML>=3.11',
-        'sqlparse>=0.2.3,<0.4',
+        'sqlparse>=0.2.3,<0.5',
         'networkx>=2.3,<3',
         'minimal-snowplow-tracker==0.0.2',
         'colorama>=0.3.9,<0.4.5',
