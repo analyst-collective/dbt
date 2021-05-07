@@ -19,8 +19,11 @@ def gcloud_installed():
         return False
 
 
-def setup_default_credentials():
+def setup_default_credentials(credentials):
     if gcloud_installed():
-        run_cmd('.', ["gcloud", "auth", "application-default", "login"])
+        if credentials.launch_browser:
+            run_cmd('.', ["gcloud", "auth", "application-default", "login"])
+        else:
+            run_cmd('.', ["gcloud", "auth", "application-default", "login", "--no-launch-browser"])
     else:
         raise dbt.exceptions.RuntimeException(NOT_INSTALLED_MSG)
