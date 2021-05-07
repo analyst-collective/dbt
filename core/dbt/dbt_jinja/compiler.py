@@ -2,10 +2,10 @@ from dataclasses import dataclass
 from functools import reduce
 from itertools import dropwhile
 from tree_sitter import Language, Parser  # type: ignore
-
+from pathlib import Path
 
 # global values
-JINJA2_LANGUAGE = Language('./core/dbt/dbt_jinja/build/dbtjinja.so', 'dbt_jinja')
+JINJA2_LANGUAGE = Language(Path(__file__).parent.absolute() / 'build' / 'dbtjinja.so', 'dbt_jinja')
 parser = Parser()
 parser.set_language(JINJA2_LANGUAGE)
 
