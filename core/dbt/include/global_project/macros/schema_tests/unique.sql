@@ -7,7 +7,8 @@ select *
 from (
 
     select
-        {{ column_name }}
+        {{ column_name }} as value,
+        count(*) as num
 
     from {{ model }}
     where {{ column_name }} is not null

@@ -1,0 +1,17 @@
+version: 2
+
+models:
+
+  - name: fine_model
+    columns:
+      - name: id
+        tests:
+          - unique
+          - not_null
+
+  - name: problematic_model
+    columns:
+      - name: id
+        tests:
+          - unique
+          - not_null

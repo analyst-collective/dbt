@@ -1,6 +1,7 @@
 from typing import List
 
 from dbt.dataclass_schema import StrEnum
+from dbt import flags
 
 
 class NodeType(StrEnum):
@@ -48,6 +49,10 @@ class NodeType(StrEnum):
             cls.Analysis,
             cls.Exposure
         ]
+
+    @classmethod
+    def relational(cls) -> List['NodeType']:
+        return cls.refable() + ([cls.Test] if flags.STORE_FAILURES else [])
 
     def pluralize(self) -> str:
         if self == 'analysis':

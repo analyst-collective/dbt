@@ -999,7 +999,7 @@ class TestDocsGenerate(DBTIntegrationTest):
             'severity': 'ERROR',
             'full_refresh': None,
             'database': None,
-            'schema': None,
+            'schema': 'dbt_test__audit',
             'alias': None,
         }
         result.update(updates)
@@ -1065,6 +1065,7 @@ class TestDocsGenerate(DBTIntegrationTest):
         snapshot_path = self.dir(os.path.join('snapshot', 'snapshot_seed.sql'))
 
         my_schema_name = self.unique_schema()
+        test_audit_schema = my_schema_name + '_dbt_test__audit'
 
         if model_database is None:
             model_database = self.alternative_database
@@ -1357,7 +1358,7 @@ class TestDocsGenerate(DBTIntegrationTest):
                     'relation_name': None,
                     'resource_type': 'test',
                     'root_path': self.test_root_realpath,
-                    'schema': my_schema_name,
+                    'schema': test_audit_schema,
                     'database': self.default_database,
                     'tags': ['schema'],
                     'meta': {},
@@ -1444,7 +1445,7 @@ class TestDocsGenerate(DBTIntegrationTest):
                     'relation_name': None,
                     'resource_type': 'test',
                     'root_path': self.test_root_realpath,
-                    'schema': my_schema_name,
+                    'schema': test_audit_schema,
                     'database': self.default_database,
                     'tags': ['schema'],
                     'meta': {},
@@ -1488,7 +1489,7 @@ class TestDocsGenerate(DBTIntegrationTest):
                     'relation_name': None,
                     'resource_type': 'test',
                     'root_path': self.test_root_realpath,
-                    'schema': my_schema_name,
+                    'schema': test_audit_schema,
                     'database': self.default_database,
                     'tags': ['schema'],
                     'meta': {},

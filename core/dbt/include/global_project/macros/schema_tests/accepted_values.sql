@@ -6,17 +6,20 @@
 
 with all_values as (
 
-    select distinct
-        {{ column_name }} as value_field
+    select
+        {{ column_name }} as value_field,
+        count(*) as num
 
     from {{ model }}
+    group by 1
 
 ),
 
 validation_errors as (
 
     select
-        value_field
+        value_field,
+        num
 
     from all_values
     where value_field not in (

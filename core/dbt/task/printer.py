@@ -10,6 +10,7 @@ from dbt.node_types import NodeType
 from dbt.tracking import InvocationProcessor
 from dbt import ui
 from dbt import utils
+from dbt import flags
 
 from dbt.contracts.results import (
     FreshnessStatus, NodeResult, NodeStatus, TestStatus
@@ -305,6 +306,13 @@ def print_run_result_error(
                 logger.info("")
             logger.info("  compiled SQL at {}".format(
                 result.node.build_path))
+
+        if flags.STORE_FAILURES:
+            with TextOnly():
+                logger.info("")
+            msg = f"select * from {result.node.relation_name}"
+            border = '-' * len(msg)
+            logger.info(f"  See test failures:\n  {border}\n  {msg}\n  {border}")
 
     elif result.message is not None:
         first = True

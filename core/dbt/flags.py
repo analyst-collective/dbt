@@ -16,6 +16,7 @@ TEST_NEW_PARSER = None
 WRITE_JSON = None
 PARTIAL_PARSE = None
 USE_COLORS = None
+STORE_FAILURES = None
 
 
 def env_set_truthy(key: str) -> Optional[str]:
@@ -53,7 +54,7 @@ MP_CONTEXT = _get_context()
 
 def reset():
     global STRICT_MODE, FULL_REFRESH, USE_CACHE, WARN_ERROR, TEST_NEW_PARSER, \
-        WRITE_JSON, PARTIAL_PARSE, MP_CONTEXT, USE_COLORS
+        WRITE_JSON, PARTIAL_PARSE, MP_CONTEXT, USE_COLORS, STORE_FAILURES
 
     STRICT_MODE = False
     FULL_REFRESH = False
@@ -64,11 +65,12 @@ def reset():
     PARTIAL_PARSE = False
     MP_CONTEXT = _get_context()
     USE_COLORS = True
+    STORE_FAILURES = False
 
 
 def set_from_args(args):
     global STRICT_MODE, FULL_REFRESH, USE_CACHE, WARN_ERROR, TEST_NEW_PARSER, \
-        WRITE_JSON, PARTIAL_PARSE, MP_CONTEXT, USE_COLORS
+        WRITE_JSON, PARTIAL_PARSE, MP_CONTEXT, USE_COLORS, STORE_FAILURES
 
     USE_CACHE = getattr(args, 'use_cache', USE_CACHE)
 
@@ -90,6 +92,8 @@ def set_from_args(args):
 
     if use_colors_override is not None:
         USE_COLORS = use_colors_override
+
+    STORE_FAILURES = getattr(args, 'store_failures', STORE_FAILURES)
 
 
 # initialize everything to the defaults on module load

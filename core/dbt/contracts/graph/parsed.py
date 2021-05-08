@@ -116,6 +116,10 @@ class ParsedNodeMixins(dbtClassMixin):
         return self.resource_type in NodeType.refable()
 
     @property
+    def is_relational(self):
+        return self.resource_type in NodeType.relational()
+
+    @property
     def is_ephemeral(self):
         return self.config.materialized == 'ephemeral'
 
